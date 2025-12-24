@@ -1,0 +1,292 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// 用户表
+// ============================================
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  emailVerified DateTime? @map("email_verified")
+  name          String?
+  password      String
+  image         String?
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // 关系
+  notes           Note[]
+  notebooks       Notebook[]
+  tags            Tag[]
+  accounts        Account[]
+  sessions        Session[]
+  aiConfig        AIConfig?
+  chatSessions    ChatSession[]
+  chatMessages    ChatMessage[]
+  tokenUsages     TokenUsage[]
+  scenarioDialogs ScenarioDialog[]
+
+  @@map("users")
+}
+
+// ============================================
+// 笔记表
+// ============================================
+model Note {
+  id         String   @id @default(cuid())
+  userId     String   @map("user_id")
+  notebookId String?  @map("notebook_id")
+  title      String   @db.VarChar(200)
+  content    String   @db.Text
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  // 关系
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notebook Notebook? @relation(fields: [notebookId], references: [id], onDelete: SetNull)
+  noteTags NoteTag[]
+
+  // 索引
+  @@index([userId])
+  @@index([userId, updatedAt(sort: Desc)])
+  @@index([notebookId])
+  @@map("notes")
+}
+
+// ============================================
+// NextAuth.js 相关表
+// ============================================
+
+// 账户表（支持 OAuth）
+model Account {
+  id                String  @id @default(cuid())
+  userId            String  @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String  @map("provider_account_id")
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+// 会话表（使用 JWT 时可选）
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id")
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("sessions")
+}
+
+// 验证令牌表（邮箱验证、密码重置等）
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ============================================
+// 笔记本表
+// ============================================
+model Notebook {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  parentId    String?  @map("parent_id")
+  name        String   @db.VarChar(100)
+  description String?  @db.VarChar(500)
+  color       String?  @db.VarChar(20)
+  icon        String?  @db.VarChar(50)
+  sortOrder   Int      @default(0) @map("sort_order")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // 关系
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent   Notebook?  @relation("NotebookHierarchy", fields: [parentId], references: [id], onDelete: Cascade)
+  children Notebook[] @relation("NotebookHierarchy")
+  notes    Note[]
+
+  // 索引
+  @@index([userId])
+  @@index([userId, sortOrder])
+  @@index([parentId])
+  @@index([userId, parentId])
+  @@map("notebooks")
+}
+
+// ============================================
+// 标签表
+// ============================================
+model Tag {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  name      String   @db.VarChar(50)
+  color     String?  @db.VarChar(20)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // 关系
+  user  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notes NoteTag[]
+
+  // 索引
+  @@unique([userId, name])
+  @@index([userId])
+  @@map("tags")
+}
+
+// ============================================
+// 笔记标签关联表（多对多）
+// ============================================
+model NoteTag {
+  id        String   @id @default(cuid())
+  noteId    String   @map("note_id")
+  tagId     String   @map("tag_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // 关系
+  note Note @relation(fields: [noteId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  // 索引
+  @@unique([noteId, tagId])
+  @@index([noteId])
+  @@index([tagId])
+  @@map("note_tags")
+}
+
+// ============================================
+// AI 配置表
+// ============================================
+model AIConfig {
+  id        String   @id @default(cuid())
+  userId    String   @unique @map("user_id")
+  provider  String   @default("deepseek") @db.VarChar(50) // 提供商：deepseek, openai 等
+  apiKey    String   @map("api_key") @db.VarChar(500) // 加密存储的 API Key
+  model     String   @default("deepseek-chat") @db.VarChar(100) // 模型名称
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // 关系
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("ai_configs")
+}
+
+// ============================================
+// 聊天会话表
+// ============================================
+model ChatSession {
+  id               String   @id @default(cuid())
+  userId           String   @map("user_id")
+  title            String   @default("新对话") @db.VarChar(200)
+  model            String?  @db.VarChar(100) // 会话使用的模型，NULL表示使用用户默认配置
+  scenarioDialogId String?  @map("scenario_dialog_id") // 关联的场景对话ID，NULL表示普通AI Chat
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  // 关系
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scenarioDialog ScenarioDialog? @relation(fields: [scenarioDialogId], references: [id], onDelete: SetNull)
+  messages       ChatMessage[]
+
+  @@index([userId])
+  @@index([userId, updatedAt(sort: Desc)])
+  @@index([scenarioDialogId])
+  @@map("chat_sessions")
+}
+
+// ============================================
+// 聊天消息表
+// ============================================
+model ChatMessage {
+  id        String   @id @default(cuid())
+  sessionId String   @map("session_id")
+  userId    String   @map("user_id")
+  role      String   @db.VarChar(20) // user, assistant, system
+  content   String   @db.Text
+  model     String?  @db.VarChar(100) // 使用的模型
+  tokens    Int? // 消息的 token 数量
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // 关系
+  session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([userId])
+  @@index([sessionId, createdAt])
+  @@map("chat_messages")
+}
+
+// ============================================
+// Token 使用统计表
+// ============================================
+model TokenUsage {
+  id               String   @id @default(cuid())
+  userId           String   @map("user_id")
+  model            String   @db.VarChar(100) // 模型名称
+  promptTokens     Int      @default(0) @map("prompt_tokens") // 输入 tokens
+  completionTokens Int      @default(0) @map("completion_tokens") // 输出 tokens
+  totalTokens      Int      @default(0) @map("total_tokens") // 总 tokens
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  // 关系
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, createdAt])
+  @@map("token_usages")
+}
+
+// ============================================
+// 场景对话表
+// ============================================
+model ScenarioDialog {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  name        String   @db.VarChar(100) // 场景名称
+  description String?  @db.VarChar(500) // 场景描述
+  prompt      String   @db.Text // 场景的提示词
+  enabled     Boolean  @default(false) // 是否启用
+  sortOrder   Int      @default(0) @map("sort_order") // 排序
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // 关系
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chatSessions ChatSession[] // 该场景创建的会话
+
+  // 索引
+  @@index([userId])
+  @@index([userId, enabled])
+  @@index([userId, sortOrder])
+  @@map("scenario_dialogs")
+}
