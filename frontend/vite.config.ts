@@ -17,6 +17,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
       "@note-book/shared": path.resolve(__dirname, "../shared/src"),
     },
+    preserveSymlinks: true,
   },
   server: {
     port: frontendPort,
