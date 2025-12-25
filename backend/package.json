@@ -4,7 +4,7 @@
   "description": "Note Book Backend API",
   "main": "dist/server.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "nodemon",
     "build": "tsc",
     "start": "node dist/server.js",
     "lint": "eslint src --ext .ts",
@@ -39,6 +39,7 @@
     "@types/node": "^20.11.30",
     "@types/pg": "^8.10.9",
     "dotenv-cli": "^7.4.2",
+    "nodemon": "^3.1.11",
     "prisma": "^7.1.0",
     "tsx": "^4.19.2"
   },

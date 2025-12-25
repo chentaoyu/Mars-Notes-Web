@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { formatRelativeTime, truncate } from "../../lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Note } from "@note-book/shared";
+import { Note, Tag } from "@note-book/shared";
 import { FileText, Trash2 } from "lucide-react";
 import { MarkdownPreview } from "../editor/MarkdownPreview";
 
@@ -72,7 +72,7 @@ export function NoteCard({ note, onDelete }: NoteCardProps) {
             {/* 标签列表 */}
             {note.tags && note.tags.length > 0 && (
               <div className="flex flex-wrap gap-1 max-h-[40px] sm:max-h-[56px] overflow-hidden">
-                {note.tags.slice(0, 3).map((tag) => (
+                {note.tags.slice(0, 3).map((tag: Tag) => (
                   <span
                     key={tag.id}
                     className="px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300 truncate max-w-[80px] sm:max-w-[120px]"

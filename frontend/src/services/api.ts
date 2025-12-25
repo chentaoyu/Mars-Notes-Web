@@ -1,8 +1,11 @@
 import axios from 'axios'
 import { ApiResponse, Note, User, Notebook, Tag } from '@note-book/shared'
 
+// 支持通过环境变量配置 API 基础 URL，生产环境可以使用完整 URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },

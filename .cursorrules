@@ -3,7 +3,7 @@
 ## Git Commit Messages
 - 所有的 git commit message 必须使用中文（简体中文）
 - 遵循约定式提交（Conventional Commits）格式
-- 格式：`类型(范围): 描述`
+- 格式：`项目名称 - 类型(范围): 描述`
 - 类型包括：
   - feat: 新功能
   - fix: 修复
@@ -14,9 +14,9 @@
   - chore: 构建/工具
 
 ## 示例
-- feat(auth): 添加用户登录功能
-- fix(editor): 修复自动保存问题
-- docs(readme): 更新项目文档
+- backend - feat(auth): 添加用户登录功能
+- frontend - fix(editor): 修复自动保存问题
+- shared - docs(readme): 更新项目文档
 
 - git 生成 commit message 时，如果有多个文件修改，需要生成一个列表来描述每个文件的修改内容。
 

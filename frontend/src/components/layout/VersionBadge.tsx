@@ -6,7 +6,8 @@ export function VersionBadge() {
 
   useEffect(() => {
     // 在客户端获取版本号
-    fetch("/api/version")
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
+    fetch(`${API_BASE_URL}/version`)
       .then((res) => res.json())
       .then((data) => setVersion(data.version || "1"))
       .catch(() => setVersion("1"));

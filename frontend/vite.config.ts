@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import dotenv from "dotenv";
+import { viteStaticCopy } from "vite-plugin-static-copy";
 
 // Load .env from root directory
 const rootDir = path.resolve(__dirname, "..");
@@ -11,7 +12,25 @@ const frontendPort = parseInt(process.env.FRONTEND_PORT || "3000", 10);
 const backendPort = parseInt(process.env.BACKEND_PORT || "3001", 10);
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    viteStaticCopy({
+      targets: [
+        {
+          src: path.resolve(rootDir, "node_modules/vditor/dist/js/**/*"),
+          dest: "vendor/vditor/dist/js",
+        },
+        {
+          src: path.resolve(rootDir, "node_modules/vditor/dist/css/**/*"),
+          dest: "vendor/vditor/dist/css",
+        },
+        {
+          src: path.resolve(rootDir, "node_modules/vditor/dist/images/**/*"),
+          dest: "vendor/vditor/dist/images",
+        },
+      ],
+    }),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

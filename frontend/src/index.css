@@ -141,67 +141,129 @@
 
 @layer base {
   * {
-    @apply border-border;
+    border-color: hsl(var(--border));
   }
   body {
-    @apply bg-background text-foreground;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
   }
 }
 
 /* 自定义样式 */
-.markdown-body {
-  @apply prose prose-slate max-w-none dark:prose-invert;
-  @apply prose-headings:font-bold prose-headings:tracking-tight;
-  @apply prose-a:text-primary prose-a:no-underline hover:prose-a:underline;
-  @apply prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md;
-  @apply prose-code:before:content-none prose-code:after:content-none;
-  @apply prose-pre:bg-muted prose-pre:border;
+@layer components {
+  .markdown-body {
+    /* prose 类已在组件中直接使用，这里只添加覆盖样式 */
+    @apply max-w-none;
+  }
+  
+  .markdown-body :is(h1, h2, h3, h4, h5, h6) {
+    @apply font-bold tracking-tight;
+  }
+  
+  .markdown-body a {
+    color: hsl(var(--primary));
+    text-decoration: none;
+  }
+  
+  .markdown-body a:hover {
+    text-decoration: underline;
+  }
+  
+  .markdown-body code {
+    background-color: hsl(var(--muted));
+    @apply px-1.5 py-0.5 rounded-md;
+  }
+  
+  .markdown-body code::before,
+  .markdown-body code::after {
+    content: none;
+  }
+  
+  .markdown-body pre {
+    background-color: hsl(var(--muted));
+    border: 1px solid hsl(var(--border));
+  }
 }
 
-.note-card {
-  @apply transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
-}
+@layer components {
+  .note-card {
+    @apply transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
+  }
 
-/* 笔记卡片中的 Markdown 预览样式 */
-.markdown-preview-card {
-  @apply max-h-20 overflow-hidden;
-}
+  /* 笔记卡片中的 Markdown 预览样式 */
+  .markdown-preview-card {
+    @apply max-h-20 overflow-hidden;
+  }
 
-.markdown-preview-card .markdown-body {
-  @apply p-0 m-0 !important;
-  @apply prose prose-slate max-w-none dark:prose-invert;
-  @apply prose-sm;
-  @apply prose-headings:mt-0 prose-headings:mb-1 prose-headings:text-sm;
-  @apply prose-p:my-0.5 prose-p:text-xs prose-p:leading-relaxed;
-  @apply prose-ul:my-0.5 prose-ol:my-0.5;
-  @apply prose-li:my-0 prose-li:text-xs;
-  @apply prose-code:text-[10px] prose-code:px-1 prose-code:py-0.5 prose-code:rounded;
-  @apply prose-pre:my-0.5 prose-pre:text-[10px] prose-pre:overflow-hidden;
-  @apply prose-blockquote:my-0.5 prose-blockquote:border-l-2 prose-blockquote:text-xs;
-  @apply prose-hr:my-0.5;
-  @apply prose-table:text-xs;
-  @apply prose-strong:text-xs;
-  @apply prose-em:text-xs;
-}
+  .markdown-preview-card .markdown-body {
+    @apply p-0 m-0 max-w-none;
+  }
+  
+  .markdown-preview-card .markdown-body :is(h1, h2, h3, h4, h5, h6) {
+    @apply mt-0 mb-1 text-sm;
+  }
+  
+  .markdown-preview-card .markdown-body p {
+    @apply my-0.5 text-xs leading-relaxed;
+  }
+  
+  .markdown-preview-card .markdown-body ul,
+  .markdown-preview-card .markdown-body ol {
+    @apply my-0.5;
+  }
+  
+  .markdown-preview-card .markdown-body li {
+    @apply my-0 text-xs;
+  }
+  
+  .markdown-preview-card .markdown-body code {
+    @apply text-[10px] px-1 py-0.5 rounded;
+  }
+  
+  .markdown-preview-card .markdown-body pre {
+    @apply my-0.5 text-[10px] overflow-hidden;
+  }
+  
+  .markdown-preview-card .markdown-body blockquote {
+    @apply my-0.5 border-l-2 text-xs;
+  }
+  
+  .markdown-preview-card .markdown-body hr {
+    @apply my-0.5;
+  }
+  
+  .markdown-preview-card .markdown-body table {
+    @apply text-xs;
+  }
+  
+  .markdown-preview-card .markdown-body strong {
+    @apply text-xs;
+  }
+  
+  .markdown-preview-card .markdown-body em {
+    @apply text-xs;
+  }
 
-.markdown-preview-card .markdown-body > * {
-  @apply line-clamp-2;
-}
+  .markdown-preview-card .markdown-body > * {
+    @apply line-clamp-2;
+  }
 
-.markdown-preview-card .markdown-body > *:last-child {
-  @apply mb-0;
-}
+  .markdown-preview-card .markdown-body > *:last-child {
+    @apply mb-0;
+  }
 
-.save-indicator {
-  @apply text-sm text-muted-foreground transition-opacity;
-}
+  .save-indicator {
+    @apply text-sm transition-opacity;
+    color: hsl(var(--muted-foreground));
+  }
 
-.save-indicator.saving {
-  @apply opacity-100;
-}
+  .save-indicator.saving {
+    @apply opacity-100;
+  }
 
-.save-indicator.saved {
-  @apply opacity-70;
+  .save-indicator.saved {
+    @apply opacity-70;
+  }
 }
 
 /* 滚动条样式 */
@@ -215,16 +277,18 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-border rounded-full;
+  background-color: hsl(var(--border));
+  @apply rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-muted-foreground/50;
+  background-color: hsl(var(--muted-foreground) / 0.5);
 }
 
 /* 代码高亮样式优化 */
 pre[class*="language-"] {
-  @apply rounded-lg border;
+  @apply rounded-lg;
+  border: 1px solid hsl(var(--border));
 }
 
 code[class*="language-"] {
@@ -232,24 +296,29 @@ code[class*="language-"] {
 }
 
 /* 紫葡萄色主题增强样式 */
-.grape-gradient {
-  @apply bg-gradient-purple;
-}
+@layer components {
+  .grape-gradient {
+    @apply bg-gradient-purple;
+  }
 
-.grape-glow {
-  box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
-}
+  .grape-glow {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+  }
 
-.grape-border {
-  @apply border-primary/20;
-}
+  .grape-border {
+    border-color: hsl(var(--primary) / 0.2);
+  }
 
-/* 卡片悬停效果 - 紫色主题 */
-.card-hover-grape {
-  @apply transition-all duration-300;
-  @apply hover:shadow-lg hover:shadow-primary/10;
-  @apply hover:border-primary/30;
-  @apply hover:-translate-y-1;
+  /* 卡片悬停效果 - 紫色主题 */
+  .card-hover-grape {
+    @apply transition-all duration-300;
+    @apply hover:shadow-lg hover:-translate-y-1;
+  }
+  
+  .card-hover-grape:hover {
+    box-shadow: 0 10px 15px -3px hsl(var(--primary) / 0.1), 0 4px 6px -2px hsl(var(--primary) / 0.1);
+    border-color: hsl(var(--primary) / 0.3);
+  }
 }
 
 /* 按钮脉冲动画 */
@@ -267,26 +336,33 @@ code[class*="language-"] {
 }
 
 /* 渐变文字效果 */
-.text-gradient-grape {
-  @apply bg-gradient-purple bg-clip-text text-transparent;
+@layer components {
+  .text-gradient-grape {
+    @apply bg-gradient-purple bg-clip-text text-transparent;
+  }
+
+  /* 焦点状态增强 */
+  .focus-grape:focus-visible {
+    @apply outline-none ring-2 ring-offset-2;
+    --tw-ring-color: hsl(var(--primary));
+    --tw-ring-offset-color: hsl(var(--background));
+  }
+
+  /* 侧边栏装饰 */
+  .sidebar-accent {
+    @apply border-l-4 transition-colors duration-200;
+    border-left-color: hsl(var(--primary) / 0.2);
+  }
+  
+  .sidebar-accent:hover {
+    border-left-color: hsl(var(--primary) / 0.6);
+  }
 }
 
 /* 紫色选中状态 */
 ::selection {
   background-color: hsl(var(--primary) / 0.3);
   color: hsl(var(--foreground));
-}
-
-/* 焦点状态增强 */
-.focus-grape:focus-visible {
-  @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
-}
-
-/* 侧边栏装饰 */
-.sidebar-accent {
-  @apply border-l-4 border-l-primary/20;
-  @apply hover:border-l-primary/60;
-  @apply transition-colors duration-200;
 }
 
 /* 加载动画 - 紫色主题 */
@@ -305,30 +381,38 @@ code[class*="language-"] {
 }
 
 /* 页面标题装饰 */
-.page-title-grape {
-  @apply relative;
-}
+@layer components {
+  .page-title-grape {
+    @apply relative;
+  }
 
-.page-title-grape::after {
-  content: '';
-  @apply absolute -bottom-2 left-0 h-1 w-16 bg-gradient-purple rounded-full;
-}
+  .page-title-grape::after {
+    content: '';
+    @apply absolute -bottom-2 left-0 h-1 w-16 rounded-full;
+    background: linear-gradient(135deg, hsl(var(--gradient-from)), hsl(var(--gradient-to)));
+  }
 
-/* 标签样式增强 */
-.tag-grape {
-  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-  @apply bg-primary/10 text-primary;
-  @apply border border-primary/20;
-  @apply hover:bg-primary/20 transition-colors;
-}
+  /* 标签样式增强 */
+  .tag-grape {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium transition-colors;
+    background-color: hsl(var(--primary) / 0.1);
+    color: hsl(var(--primary));
+    border: 1px solid hsl(var(--primary) / 0.2);
+  }
+  
+  .tag-grape:hover {
+    background-color: hsl(var(--primary) / 0.2);
+  }
 
-/* 通知点样式 */
-.notification-dot {
-  @apply relative;
-}
+  /* 通知点样式 */
+  .notification-dot {
+    @apply relative;
+  }
 
-.notification-dot::after {
-  content: '';
-  @apply absolute -top-1 -right-1 h-2 w-2 bg-primary rounded-full;
-  animation: pulse-grape 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  .notification-dot::after {
+    content: '';
+    @apply absolute -top-1 -right-1 h-2 w-2 rounded-full;
+    background-color: hsl(var(--primary));
+    animation: pulse-grape 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
 }

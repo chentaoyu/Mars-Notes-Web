@@ -45,7 +45,7 @@ note-book-web/
 ### 环境要求
 
 - Node.js >= 18.17.0
-- PostgreSQL >= 14
+- PostgreSQL >= 15
 - npm >= 7 (支持 workspaces)
 
 ### 安装依赖
@@ -66,7 +66,7 @@ cp .env.example .env
 然后编辑 `.env` 文件，设置你的配置：
 
 ```env
-DATABASE_URL="postgresql://user:password@localhost:5432/notedb"
+DATABASE_URL="postgresql://notedb_user:password@localhost:5432/notedb"
 
 # Backend Server
 BACKEND_PORT=3001
@@ -89,6 +89,59 @@ CORS_ORIGIN=http://localhost:3000
 - `CORS_ORIGIN`: CORS 允许的源，如果不设置会自动从 `FRONTEND_PORT` 生成
 
 **注意**: `.env` 文件位于项目根目录，所有 workspace（前端、后端、共享包）都可以访问这些环境变量。
+
+### 安装和启动 PostgreSQL
+
+#### macOS (使用 Homebrew)
+
+```bash
+# 安装 PostgreSQL
+brew install postgresql@15
+
+# 启动 PostgreSQL 服务
+brew services start postgresql@15
+
+# 或者手动启动（不随系统启动）
+pg_ctl -D /usr/local/var/postgresql@15 start
+```
+
+#### 创建数据库
+
+```bash
+# 连接到 PostgreSQL（使用默认的 postgres 用户）
+psql postgres
+
+# 在 psql 中创建数据库和用户
+CREATE DATABASE notedb;
+CREATE USER notedb_user WITH PASSWORD 'your_password';
+GRANT ALL PRIVILEGES ON DATABASE notedb TO notedb_user;
+ALTER USER notedb_user CREATEDB;  -- 授予创建数据库权限（Prisma Migrate 需要）
+\q
+
+# 连接到 notedb 数据库，授予 public schema 权限（PostgreSQL 15+ 需要）
+psql notedb
+GRANT ALL ON SCHEMA public TO notedb_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO notedb_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO notedb_user;
+\q
+```
+
+**注意**: 
+- 不要使用 PostgreSQL 保留关键字（如 `user`）作为用户名，如果必须使用，需要用双引号括起来：`CREATE USER "user" ...`
+- 创建数据库后，请更新 `.env` 文件中的 `DATABASE_URL`，使用你创建的用户名和密码：
+```env
+DATABASE_URL="postgresql://notedb_user:your_password@localhost:5432/notedb"
+```
+
+#### 检查 PostgreSQL 是否运行
+
+```bash
+# 检查端口 5432 是否有进程监听
+lsof -i :5432
+
+# 或者使用 psql 测试连接
+psql -h localhost -p 5432 -U notedb_user -d notedb
+```
 
 ### 数据库设置
 

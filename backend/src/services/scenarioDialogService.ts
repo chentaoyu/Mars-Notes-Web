@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../utils/prisma";
 import { NotFoundError } from "../errors/AppError";
-
-const prisma = new PrismaClient();
 
 export interface CreateScenarioDialogData {
   name: string;

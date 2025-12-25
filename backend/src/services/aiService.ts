@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../utils/prisma";
 import { ValidationError, NotFoundError } from "../errors/AppError";
-
-const prisma = new PrismaClient();
 const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
 
 export interface AIConfigData {
