@@ -4,6 +4,11 @@ import "express-async-errors";
 import { env } from "./config/env";
 import authRoutes from "./routes/authRoutes";
 import noteRoutes from "./routes/noteRoutes";
+import notebookRoutes from "./routes/notebookRoutes";
+import tagRoutes from "./routes/tagRoutes";
+import userRoutes from "./routes/userRoutes";
+import scenarioDialogRoutes from "./routes/scenarioDialogRoutes";
+import aiRoutes from "./routes/aiRoutes";
 import { errorHandler } from "./errors/errorHandler";
 
 export function createApp(): Express {
@@ -21,6 +26,11 @@ export function createApp(): Express {
 
   app.use("/api/auth", authRoutes);
   app.use("/api/notes", noteRoutes);
+  app.use("/api/notebooks", notebookRoutes);
+  app.use("/api/tags", tagRoutes);
+  app.use("/api/user", userRoutes);
+  app.use("/api/scenario-dialogs", scenarioDialogRoutes);
+  app.use("/api/ai", aiRoutes);
 
   app.use(errorHandler);
 

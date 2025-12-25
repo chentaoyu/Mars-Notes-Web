@@ -20,6 +20,11 @@ export interface Notebook {
   sortOrder: number;
   createdAt: Date | string;
   updatedAt: Date | string;
+  children?: Notebook[];
+  _count?: {
+    notes: number;
+    children?: number;
+  };
 }
 
 export interface Tag {
@@ -29,6 +34,9 @@ export interface Tag {
   color?: string | null;
   createdAt: Date | string;
   updatedAt: Date | string;
+  _count?: {
+    notes: number;
+  };
 }
 
 export interface Note {
@@ -41,6 +49,75 @@ export interface Note {
   updatedAt: Date | string;
   notebook?: Notebook | null;
   tags?: Tag[];
+}
+
+// 笔记排序选项
+export type NoteSortBy = 'updatedAt' | 'createdAt' | 'title';
+export type NoteSortOrder = 'asc' | 'desc';
+
+// 笔记查询参数
+export interface NoteQueryParams {
+  search?: string;
+  notebookId?: string;
+  tagIds?: string[];
+  sortBy?: NoteSortBy;
+  sortOrder?: NoteSortOrder;
+  page?: number;
+  limit?: number;
+}
+
+// AI 相关类型
+export interface AIConfig {
+  id: string;
+  userId: string;
+  provider: string;
+  apiKey: string;
+  model: string;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+}
+
+export interface ChatSession {
+  id: string;
+  userId: string;
+  title: string;
+  model?: string | null;
+  scenarioDialogId?: string | null;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+}
+
+export interface ChatMessage {
+  id: string;
+  sessionId: string;
+  userId: string;
+  role: string;
+  content: string;
+  model?: string | null;
+  tokens?: number | null;
+  createdAt: Date | string;
+}
+
+export interface TokenUsage {
+  id: string;
+  userId: string;
+  model: string;
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+  createdAt: Date | string;
+}
+
+export interface ScenarioDialog {
+  id: string;
+  userId: string;
+  name: string;
+  description?: string | null;
+  prompt: string;
+  enabled: boolean;
+  sortOrder: number;
+  createdAt: Date | string;
+  updatedAt: Date | string;
 }
 
 export interface ApiResponse<T = any> {

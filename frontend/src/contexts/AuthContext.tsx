@@ -6,7 +6,7 @@ import {
   ReactNode,
 } from "react";
 import { User } from "@note-book/shared";
-import { authApi } from "../services/api";
+import { authApi, setLogoutCallback } from "../services/api";
 
 interface AuthContextType {
   user: User | null;
@@ -14,6 +14,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name?: string) => Promise<void>;
   logout: () => void;
+  setUser: (user: User | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -64,8 +65,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   };
 
+  // 设置全局logout回调，供API拦截器使用
+  useEffect(() => {
+    setLogoutCallback(logout);
+    return () => {
+      setLogoutCallback(() => {});
+    };
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );

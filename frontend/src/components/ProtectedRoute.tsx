@@ -1,13 +1,27 @@
 import { Navigate } from "react-router";
 import { useAuth } from "../contexts/AuthContext";
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useCallback } from "react";
 
 interface ProtectedRouteProps {
   children: ReactNode;
 }
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { user, loading } = useAuth();
+  const { user, loading, logout } = useAuth();
+
+  // 使用useCallback确保logout函数引用稳定
+  const checkAuthConsistency = useCallback(() => {
+    const token = localStorage.getItem("token");
+    if (!token && user) {
+      // 有user但没有token，状态不一致，清除user
+      logout();
+    }
+  }, [user, logout]);
+
+  useEffect(() => {
+    // 检查token和user的一致性
+    checkAuthConsistency();
+  }, [checkAuthConsistency]);
 
   if (loading) {
     return <div>Loading...</div>;

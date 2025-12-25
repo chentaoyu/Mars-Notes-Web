@@ -1,0 +1,89 @@
+import { ArrowDownAZ, ArrowUpAZ, Calendar, Clock } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectSeparator,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { NoteSortBy, NoteSortOrder } from "@note-book/shared";
+
+interface SortSelectorProps {
+  sortBy: NoteSortBy;
+  sortOrder: NoteSortOrder;
+  onSortChange: (sortBy: NoteSortBy, sortOrder: NoteSortOrder) => void;
+}
+
+export function SortSelector({ sortBy, sortOrder, onSortChange }: SortSelectorProps) {
+  const currentValue = `${sortBy}-${sortOrder}`;
+
+  const handleValueChange = (value: string) => {
+    const [newSortBy, newSortOrder] = value.split("-") as [NoteSortBy, NoteSortOrder];
+    onSortChange(newSortBy, newSortOrder);
+  };
+
+  return (
+    <Select value={currentValue} onValueChange={handleValueChange}>
+      <SelectTrigger className="w-full sm:w-[180px]">
+        <SelectValue placeholder="选择排序方式" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel className="text-xs sm:text-sm">按更新时间</SelectLabel>
+          <SelectItem value="updatedAt-desc" className="text-xs sm:text-sm">
+            <div className="flex items-center gap-2">
+              <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span>最近更新</span>
+            </div>
+          </SelectItem>
+          <SelectItem value="updatedAt-asc" className="text-xs sm:text-sm">
+            <div className="flex items-center gap-2">
+              <Clock className="h-3 w-3 sm:h-4 sm:w-4 opacity-50" />
+              <span>最早更新</span>
+            </div>
+          </SelectItem>
+        </SelectGroup>
+
+        <SelectSeparator />
+
+        <SelectGroup>
+          <SelectLabel className="text-xs sm:text-sm">按创建时间</SelectLabel>
+          <SelectItem value="createdAt-desc" className="text-xs sm:text-sm">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span>最新创建</span>
+            </div>
+          </SelectItem>
+          <SelectItem value="createdAt-asc" className="text-xs sm:text-sm">
+            <div className="flex items-center gap-2">
+              <Calendar className="h-3 w-3 sm:h-4 sm:w-4 opacity-50" />
+              <span>最早创建</span>
+            </div>
+          </SelectItem>
+        </SelectGroup>
+
+        <SelectSeparator />
+
+        <SelectGroup>
+          <SelectLabel className="text-xs sm:text-sm">按标题</SelectLabel>
+          <SelectItem value="title-asc" className="text-xs sm:text-sm">
+            <div className="flex items-center gap-2">
+              <ArrowDownAZ className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span>标题 A-Z</span>
+            </div>
+          </SelectItem>
+          <SelectItem value="title-desc" className="text-xs sm:text-sm">
+            <div className="flex items-center gap-2">
+              <ArrowUpAZ className="h-3 w-3 sm:h-4 sm:w-4" />
+              <span>标题 Z-A</span>
+            </div>
+          </SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
+}
+

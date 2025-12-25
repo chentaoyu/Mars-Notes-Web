@@ -9,6 +9,7 @@ export function errorHandler(
 ): void {
   if (err instanceof AppError) {
     res.status(err.statusCode).json({
+      data: null,
       error: err.message,
       code: err.code,
     });
@@ -17,6 +18,7 @@ export function errorHandler(
 
   console.error("Unexpected error:", err);
   res.status(500).json({
+    data: null,
     error: "Internal server error",
     code: "INTERNAL_ERROR",
   });
