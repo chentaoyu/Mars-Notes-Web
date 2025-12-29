@@ -9,7 +9,7 @@
     "start": "node dist/server.js",
     "lint": "eslint src --ext .ts",
     "lint:fix": "eslint src --ext .ts --fix",
-    "db:generate": "dotenv -e ../../.env -- prisma generate",
+    "db:generate": "node -e \"process.chdir('..'); require('child_process').execSync('npm run db:generate', {stdio: 'inherit'})\"",
     "db:migrate": "dotenv -e ../../.env -- prisma migrate dev --config=./prisma/config.ts",
     "db:push": "dotenv -e ../../.env -- prisma db push --config=./prisma/config.ts",
     "db:studio": "dotenv -e ../../.env -- prisma studio"

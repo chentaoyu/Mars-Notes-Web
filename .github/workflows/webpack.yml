@@ -44,9 +44,7 @@ jobs:
         rm -rf shared/dist backend/dist frontend/dist
 
     - name: Generate Prisma Client
-      run: |
-        cd backend
-        npx prisma generate
+      run: npm run db:generate --workspace=backend
 
     - name: Build shared package first
       run: npm run build --workspace=shared
