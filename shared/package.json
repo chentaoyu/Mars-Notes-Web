@@ -1,5 +1,5 @@
 {
-  "name": "@shared",
+  "name": "mars-notes-shared",
   "version": "1.0.0",
   "description": "Shared types and utilities for Note Book",
   "main": "./dist/index.js",
