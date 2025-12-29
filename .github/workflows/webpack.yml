@@ -25,6 +25,17 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
+    - name: Print environment info
+      run: |
+        echo "=== Node.js Version ==="
+        node -v
+        echo ""
+        echo "=== TypeScript Version ==="
+        tsc --version
+        echo ""
+        echo "=== npm list ==="
+        npm list --depth=0
+
     - name: Clean TypeScript build cache
       run: |
         rm -f shared/tsconfig.tsbuildinfo
