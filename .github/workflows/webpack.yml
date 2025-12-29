@@ -23,7 +23,10 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
     - name: Install dependencies
-      run: npm install
+      run: npm ci
+
+    - name: Build shared package first
+      run: npm run build --workspace=shared
 
     - name: Build application
       run: npm run build
