@@ -18,8 +18,8 @@ export class NotebookService {
     // 构建树形结构
     const buildTree = (parentId: string | null = null): any[] => {
       return allNotebooks
-        .filter((nb) => nb.parentId === parentId)
-        .map((notebook) => ({
+        .filter((nb: { parentId: string | null }) => nb.parentId === parentId)
+        .map((notebook: any) => ({
           ...notebook,
           children: buildTree(notebook.id),
         }));
