@@ -43,6 +43,11 @@ jobs:
         rm -f frontend/tsconfig.tsbuildinfo
         rm -rf shared/dist backend/dist frontend/dist
 
+    - name: Generate Prisma Client
+      run: |
+        cd backend
+        npx prisma generate
+
     - name: Build shared package first
       run: npm run build --workspace=shared
 
