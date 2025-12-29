@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Notebook } from '@note-book/shared';
+import { Notebook } from '@shared/types';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { DeleteConfirmDialog } from '../common/DeleteConfirmDialog';

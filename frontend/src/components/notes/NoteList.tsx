@@ -1,5 +1,5 @@
 import { NoteCard } from "./NoteCard";
-import { Note } from "@note-book/shared";
+import { Note } from "@shared/types";
 
 interface NoteListProps {
   notes: Note[];

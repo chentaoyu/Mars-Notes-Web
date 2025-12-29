@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Notebook, Tag, Note } from "@note-book/shared";
+import { Notebook, Tag, Note } from "@shared/types";
 import { Button } from "../ui/button";
 import { DeleteConfirmDialog } from "../common/DeleteConfirmDialog";
 import {
@@ -26,7 +26,7 @@ import {
   Settings,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
-import { NoteSortBy, NoteSortOrder } from "@note-book/shared";
+import { NoteSortBy, NoteSortOrder } from "@shared/types";
 import { SortSelector } from "../notes/SortSelector";
 import { AIChat } from "../ai/AIChat";
 import { AISettings } from "../ai/AISettings";

@@ -34,7 +34,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      "@note-book/shared": path.resolve(__dirname, "../shared/src"),
+      "@shared": path.resolve(__dirname, "../shared/src"),
     },
     preserveSymlinks: true,
   },

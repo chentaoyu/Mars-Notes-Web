@@ -6,7 +6,7 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { DeleteConfirmDialog } from "../common/DeleteConfirmDialog";
 import { Trash2, Book, Tag as TagIcon } from "lucide-react";
-import { Tag, Notebook } from "@note-book/shared";
+import { Tag, Notebook } from "@shared/types";
 import { TagSelector } from "../tags/TagSelector";
 import { noteApi, notebookApi } from "../../services/api";
 

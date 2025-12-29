@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Note, NoteSortBy, NoteSortOrder } from "@note-book/shared";
+import { Note, NoteSortBy, NoteSortOrder } from "@shared/types";
 import { FinderSidebar } from "../sidebar/FinderSidebar";
 import { MarkdownEditor } from "../editor/MarkdownEditor";
 import { Button } from "../ui/button";

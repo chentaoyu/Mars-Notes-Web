@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Tag } from "@note-book/shared";
+import { Tag } from "@shared/types";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import { DeleteConfirmDialog } from "../common/DeleteConfirmDialog";

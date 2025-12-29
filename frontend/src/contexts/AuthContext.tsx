@@ -5,7 +5,7 @@ import {
   useEffect,
   ReactNode,
 } from "react";
-import { User } from "@note-book/shared";
+import { User } from "@shared/types";
 import { authApi, setLogoutCallback } from "../services/api";
 
 interface AuthContextType {

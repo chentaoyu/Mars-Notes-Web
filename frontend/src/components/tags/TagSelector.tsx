@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Tag } from '@note-book/shared';
+import { Tag } from '@shared/types';
 
 interface TagSelectorProps {
   selectedTagIds: string[];

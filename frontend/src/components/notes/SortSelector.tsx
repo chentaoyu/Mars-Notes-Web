@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-import { NoteSortBy, NoteSortOrder } from "@note-book/shared";
+import { NoteSortBy, NoteSortOrder } from "@shared/types";
 
 interface SortSelectorProps {
   sortBy: NoteSortBy;

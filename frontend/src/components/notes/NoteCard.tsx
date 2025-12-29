@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { formatRelativeTime, truncate } from "../../lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Note, Tag } from "@note-book/shared";
+import { Note, Tag } from "@shared/types";
 import { FileText, Trash2 } from "lucide-react";
 import { MarkdownPreview } from "../editor/MarkdownPreview";
 
