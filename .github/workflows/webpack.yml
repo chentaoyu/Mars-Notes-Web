@@ -25,6 +25,13 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
+    - name: Clean TypeScript build cache
+      run: |
+        rm -f shared/tsconfig.tsbuildinfo
+        rm -f backend/tsconfig.tsbuildinfo
+        rm -f frontend/tsconfig.tsbuildinfo
+        rm -rf shared/dist backend/dist frontend/dist
+
     - name: Build shared package first
       run: npm run build --workspace=shared
 
