@@ -148,7 +148,7 @@ export class AIService {
     });
 
     const total = usages.reduce(
-      (acc: { promptTokens: number; completionTokens: number; totalTokens: number }, usage) => ({
+      (acc: { promptTokens: number; completionTokens: number; totalTokens: number }, usage: { promptTokens: number; completionTokens: number; totalTokens: number }) => ({
         promptTokens: acc.promptTokens + usage.promptTokens,
         completionTokens: acc.completionTokens + usage.completionTokens,
         totalTokens: acc.totalTokens + usage.totalTokens,
@@ -156,7 +156,7 @@ export class AIService {
       { promptTokens: 0, completionTokens: 0, totalTokens: 0 }
     );
 
-    const byModel = usages.reduce((acc: Record<string, { promptTokens: number; completionTokens: number; totalTokens: number; count: number }>, usage) => {
+    const byModel = usages.reduce((acc: Record<string, { promptTokens: number; completionTokens: number; totalTokens: number; count: number }>, usage: { model: string; promptTokens: number; completionTokens: number; totalTokens: number }) => {
       if (!acc[usage.model]) {
         acc[usage.model] = {
           promptTokens: 0,
@@ -172,7 +172,7 @@ export class AIService {
       return acc;
     }, {} as Record<string, { promptTokens: number; completionTokens: number; totalTokens: number; count: number }>);
 
-    const byDay = usages.reduce((acc: Record<string, { totalTokens: number; count: number }>, usage) => {
+    const byDay = usages.reduce((acc: Record<string, { totalTokens: number; count: number }>, usage: { createdAt: Date; totalTokens: number }) => {
       const day = usage.createdAt.toISOString().split("T")[0];
       if (!acc[day]) {
         acc[day] = { totalTokens: 0, count: 0 };
