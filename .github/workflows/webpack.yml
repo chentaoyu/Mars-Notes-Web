@@ -1,4 +1,4 @@
-name: NodeJS with Webpack
+name: Build and Deploy to Aliyun ECS
 
 on:
   push:
@@ -22,6 +22,90 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-    - name: Build
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build application
+      run: npm run build
+
+    - name: Archive build artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-artifacts
+        path: |
+          backend/dist
+          frontend/dist
+          shared/dist
+        retention-days: 1
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: build-artifacts
+
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.ECS_SSH_KEY }}
+
+    - name: Add ECS host to known hosts
       run: |
-        npm install
+        mkdir -p ~/.ssh
+        ssh-keyscan -H ${{ secrets.ECS_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Deploy to ECS
+      env:
+        ECS_HOST: ${{ secrets.ECS_HOST }}
+        ECS_USER: ${{ secrets.ECS_USER }}
+        ECS_DEPLOY_PATH: ${{ secrets.ECS_DEPLOY_PATH }}
+      run: |
+        # 创建部署目录
+        ssh $ECS_USER@$ECS_HOST "mkdir -p $ECS_DEPLOY_PATH"
+        
+        # 上传构建产物
+        scp -r backend/dist $ECS_USER@$ECS_HOST:$ECS_DEPLOY_PATH/backend/
+        scp -r frontend/dist $ECS_USER@$ECS_HOST:$ECS_DEPLOY_PATH/frontend/
+        
+        # 上传必要的配置文件
+        scp package.json $ECS_USER@$ECS_HOST:$ECS_DEPLOY_PATH/
+        scp -r backend/package.json $ECS_USER@$ECS_HOST:$ECS_DEPLOY_PATH/backend/
+        scp -r backend/prisma $ECS_USER@$ECS_HOST:$ECS_DEPLOY_PATH/backend/
+        
+        # 在服务器上执行部署命令
+        ssh $ECS_USER@$ECS_HOST bash << EOF
+          set -e
+          cd $ECS_DEPLOY_PATH
+          
+          # 安装生产依赖
+          if [ -f "package.json" ]; then
+            npm ci --production
+          fi
+          
+          cd backend
+          if [ -f "package.json" ]; then
+            npm ci --production
+          fi
+          
+          # 生成 Prisma Client
+          if [ -d "prisma" ]; then
+            npx prisma generate
+          fi
+          
+          # 运行数据库迁移（可选，根据实际情况决定）
+          # npx prisma migrate deploy
+          
+          # 重启应用（根据你的进程管理工具调整，如 pm2、systemd 等）
+          # pm2 restart app || pm2 start dist/server.js --name app
+          # 或者使用 systemd:
+          # sudo systemctl restart your-app-service
+          
+          echo "Deployment completed successfully"
+        EOF
