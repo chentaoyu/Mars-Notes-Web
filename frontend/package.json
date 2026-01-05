@@ -30,7 +30,7 @@
     "react-hook-form": "^7.51.0",
     "react-markdown": "^9.0.1",
     "react-router": "^7.11.0",
-    "react-syntax-highlighter": "^15.5.0",
+    "react-syntax-highlighter": "^16.1.0",
     "remark-gfm": "^4.0.0",
     "tailwind-merge": "^2.2.2",
     "vditor": "^3.11.2",
@@ -50,7 +50,7 @@
     "tailwindcss": "^3.4.19",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.4.3",
-    "vite": "^5.4.2",
+    "vite": "^7.3.0",
     "vite-plugin-static-copy": "^3.1.4"
   }
 }
