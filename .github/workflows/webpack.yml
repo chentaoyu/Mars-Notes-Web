@@ -92,7 +92,7 @@ jobs:
           ECS_DEPLOY_PATH: ${{ secrets.ECS_DEPLOY_PATH }}
         run: |
           # 创建部署目录
-          ssh $ECS_USER@$ECS_HOST "mkdir -p $ECS_DEPLOY_PATH"
+          ssh $ECS_USER@$ECS_HOST "mkdir -p $ECS_DEPLOY_PATH/backend $ECS_DEPLOY_PATH/frontend"
 
           # 上传构建产物
           scp -r backend/dist $ECS_USER@$ECS_HOST:$ECS_DEPLOY_PATH/backend/
