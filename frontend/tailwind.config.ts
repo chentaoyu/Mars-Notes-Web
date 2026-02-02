@@ -102,6 +102,26 @@ const config: Config = {
           from: { transform: "translateX(100%)" },
           to: { transform: "translateX(0)" },
         },
+        "dialog-in": {
+          from: { 
+            opacity: "0",
+            transform: "translate(-50%, -48%) scale(0.95)"
+          },
+          to: { 
+            opacity: "1",
+            transform: "translate(-50%, -50%) scale(1)"
+          },
+        },
+        "dialog-out": {
+          from: { 
+            opacity: "1",
+            transform: "translate(-50%, -50%) scale(1)"
+          },
+          to: { 
+            opacity: "0",
+            transform: "translate(-50%, -48%) scale(0.95)"
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -112,6 +132,8 @@ const config: Config = {
         "slide-in-from-bottom": "slide-in-from-bottom 0.3s ease-out",
         "slide-in-from-left": "slide-in-from-left 0.3s ease-out",
         "slide-in-from-right": "slide-in-from-right 0.3s ease-out",
+        "dialog-in": "dialog-in 0.3s ease-out",
+        "dialog-out": "dialog-out 0.2s ease-in",
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
