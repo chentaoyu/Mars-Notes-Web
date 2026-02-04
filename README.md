@@ -52,7 +52,7 @@ note-book-web/
 
 ```bash
 # 在根目录安装所有依赖（包括 workspaces）
-npm install
+pnpm install
 ```
 
 ### 配置环境变量
@@ -144,6 +144,11 @@ psql -h localhost -p 5432 -U notedb_user -d notedb
 ```
 
 ### 数据库设置
+
+首次配置
+```bash
+npx prisma migrate dev --name init
+```
 
 ```bash
 # 生成 Prisma Client
