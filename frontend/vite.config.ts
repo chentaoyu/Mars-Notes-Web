@@ -38,6 +38,21 @@ export default defineConfig({
     },
     preserveSymlinks: true,
   },
+  // 优化依赖预构建，自动转换 lucide-react barrel imports 为直接导入
+  optimizeDeps: {
+    include: ["lucide-react"],
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        // 将大型依赖分离到单独的 chunk
+        manualChunks: {
+          "lucide-icons": ["lucide-react"],
+          vditor: ["vditor"],
+        },
+      },
+    },
+  },
   server: {
     port: frontendPort,
     proxy: {

@@ -4,6 +4,30 @@ import { ApiResponse, Note, User, Notebook, Tag } from '@shared/types'
 // 支持通过环境变量配置 API 基础 URL，生产环境可以使用完整 URL
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
 
+// localStorage 版本控制（与 AuthContext 保持一致）
+const STORAGE_VERSION = 'v1'
+const STORAGE_KEYS = {
+  token: `auth:token:${STORAGE_VERSION}`,
+  user: `auth:user:${STORAGE_VERSION}`,
+} as const
+
+// 安全的 localStorage 操作
+function safeGetItem(key: string): string | null {
+  try {
+    return localStorage.getItem(key)
+  } catch {
+    return null
+  }
+}
+
+function safeRemoveItem(key: string): void {
+  try {
+    localStorage.removeItem(key)
+  } catch {
+    // 静默失败
+  }
+}
+
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -12,7 +36,7 @@ const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token')
+  const token = safeGetItem(STORAGE_KEYS.token)
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
@@ -30,8 +54,8 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401 || error.response?.status === 403) {
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
+      safeRemoveItem(STORAGE_KEYS.token)
+      safeRemoveItem(STORAGE_KEYS.user)
       // 调用logout回调以同步AuthContext状态
       if (logoutCallback) {
         logoutCallback()
@@ -202,7 +226,7 @@ export const aiApi = {
     await api.delete(`/ai/sessions/${id}`)
   },
   sendMessage: async (sessionId: string, message: string, model?: string): Promise<ReadableStream<Uint8Array>> => {
-    const token = localStorage.getItem('token')
+    const token = safeGetItem(STORAGE_KEYS.token)
     const response = await fetch('/api/ai/chat', {
       method: 'POST',
       headers: {
@@ -215,8 +239,8 @@ export const aiApi = {
     if (!response.ok) {
       // 处理401/403错误
       if (response.status === 401 || response.status === 403) {
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
+        safeRemoveItem(STORAGE_KEYS.token)
+        safeRemoveItem(STORAGE_KEYS.user)
         if (logoutCallback) {
           logoutCallback()
         }

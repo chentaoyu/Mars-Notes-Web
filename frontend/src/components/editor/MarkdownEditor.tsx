@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo, lazy, Suspense } from "react";
 import { useDebounce } from "../../hooks/useDebounce";
 import { AutoSaveIndicator } from "./AutoSaveIndicator";
-import { VditorEditor } from "./VditorEditor";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { DeleteConfirmDialog } from "../common/DeleteConfirmDialog";
@@ -9,6 +8,29 @@ import { Trash2, Book, Tag as TagIcon } from "lucide-react";
 import { Tag, Notebook } from "@shared/types";
 import { TagSelector } from "../tags/TagSelector";
 import { noteApi, notebookApi } from "../../services/api";
+
+// 动态导入 VditorEditor，减少首屏加载体积
+const VditorEditor = lazy(() =>
+  import("./VditorEditor").then((m) => ({ default: m.VditorEditor }))
+);
+
+// 编辑器加载骨架屏
+function EditorSkeleton() {
+  return (
+    <div className="h-full w-full flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="text-sm text-gray-500">加载编辑器...</div>
+    </div>
+  );
+}
+
+// 辅助函数：比较两个字符串数组是否相等（避免 JSON.stringify）
+function areArraysEqual(a: string[], b: string[]): boolean {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
+}
 
 interface MarkdownEditorProps {
   noteId: string;
@@ -121,11 +143,9 @@ export function MarkdownEditor({
       }
     };
 
-    // 只有当笔记本或标签改变时才保存
-    if (
-      notebookId !== initialNotebookId ||
-      JSON.stringify(tagIds) !== JSON.stringify(initialTags.map((t) => t.id))
-    ) {
+    // 只有当笔记本或标签改变时才保存（使用数组比较函数避免 JSON.stringify）
+    const initialTagIdList = initialTags.map((t) => t.id);
+    if (notebookId !== initialNotebookId || !areArraysEqual(tagIds, initialTagIdList)) {
       saveMetadata();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -181,11 +201,12 @@ export function MarkdownEditor({
 
       updatePosition();
       window.addEventListener("resize", updatePosition);
-      window.addEventListener("scroll", updatePosition, true);
+      // 使用 passive: true 提升滚动性能
+      window.addEventListener("scroll", updatePosition, { capture: true, passive: true });
 
       return () => {
         window.removeEventListener("resize", updatePosition);
-        window.removeEventListener("scroll", updatePosition, true);
+        window.removeEventListener("scroll", updatePosition, { capture: true } as EventListenerOptions);
       };
     }
     return undefined;
@@ -229,7 +250,11 @@ export function MarkdownEditor({
     }
   };
 
-  const selectedNotebook = notebooks.find((nb) => nb.id === notebookId);
+  // 使用 useMemo 优化查找，避免每次渲染都遍历数组
+  const selectedNotebook = useMemo(
+    () => notebooks.find((nb) => nb.id === notebookId),
+    [notebooks, notebookId]
+  );
 
   return (
     <div className="flex h-[calc(100vh-4rem)] sm:h-[calc(100vh-4rem)] flex-col">
@@ -346,7 +371,9 @@ export function MarkdownEditor({
       <div className="flex flex-1 overflow-hidden flex-col">
         <div className="flex flex-col flex-1 overflow-hidden">
           <div className="flex-1 overflow-hidden">
-            <VditorEditor content={content} onContentChange={setContent} />
+            <Suspense fallback={<EditorSkeleton />}>
+              <VditorEditor content={content} onContentChange={setContent} />
+            </Suspense>
           </div>
           <AutoSaveIndicator saving={saving} lastSaved={lastSaved} />
         </div>

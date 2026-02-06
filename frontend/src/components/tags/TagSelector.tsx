@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { Tag } from '@shared/types';
+import { useTags } from '../../hooks/useSWR';
 
 interface TagSelectorProps {
   selectedTagIds: string[];
@@ -7,27 +6,8 @@ interface TagSelectorProps {
 }
 
 export function TagSelector({ selectedTagIds, onChange }: TagSelectorProps) {
-  const [tags, setTags] = useState<Tag[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchTags();
-  }, []);
-
-  const fetchTags = async () => {
-    try {
-      setLoading(true);
-      const { tagApi } = await import('../../services/api');
-      const response = await tagApi.getTags();
-      if (response.data) {
-        setTags(response.data || []);
-      }
-    } catch (error) {
-      console.error('获取标签列表失败:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // 使用 SWR 自动去重请求和缓存
+  const { data: tags, isLoading } = useTags();
 
   const handleToggleTag = (tagId: string) => {
     if (selectedTagIds.includes(tagId)) {
@@ -37,11 +17,11 @@ export function TagSelector({ selectedTagIds, onChange }: TagSelectorProps) {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return <div className="text-xs sm:text-sm text-gray-500">加载标签...</div>;
   }
 
-  if (tags.length === 0) {
+  if (!tags || tags.length === 0) {
     return (
       <div className="text-xs sm:text-sm text-gray-500">
         暂无标签，请先在侧边栏创建标签

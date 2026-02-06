@@ -16,13 +16,17 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "composite": true,
     "baseUrl": ".",
     "paths": {
       "@shared/*": ["./shared/*"]
     }
   },
-  "include": [],
-  "exclude": ["node_modules", "dist", "**/dist", "**/node_modules"]
+  "files": [],
+  "exclude": ["node_modules", "dist", "**/dist", "**/node_modules"],
+  "references": [
+    { "path": "./shared" },
+    { "path": "./frontend" },
+    { "path": "./backend" }
+  ]
 }
 
